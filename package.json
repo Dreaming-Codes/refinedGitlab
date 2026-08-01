@@ -1,0 +1,31 @@
+{
+  "name": "refined-gitlab",
+  "description": "Browser extension that improves the GitLab web UI",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "tsc --noEmit",
+    "test": "bun test",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "picomatch": "^4.0.5",
+    "solid-js": "^1.9.11"
+  },
+  "devDependencies": {
+    "@types/picomatch": "^4.0.3",
+    "@wxt-dev/module-solid": "^1.1.4",
+    "bun-types": "^1.3.14",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.5",
+    "web-ext": "^10.5.0",
+    "wxt": "^0.21.3"
+  }
+}

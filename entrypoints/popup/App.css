@@ -1,0 +1,87 @@
+:root {
+  color-scheme: light dark;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+  line-height: 1.4;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  max-width: 380px;
+}
+
+.popup {
+  padding: 12px 14px 14px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.sub {
+  margin: 2px 0 12px;
+  opacity: 0.7;
+  font-size: 0.8rem;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.65;
+}
+
+.feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.feature-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.feature-row input {
+  margin-top: 3px;
+}
+
+.feature-name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.feature-desc {
+  display: block;
+  font-size: 0.78rem;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+.error {
+  color: #cf222e;
+  font-size: 0.8rem;
+}
+
+footer {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+footer p {
+  margin: 0;
+}

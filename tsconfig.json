@@ -1,0 +1,9 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": ["bun-types"]
+  },
+  "exclude": ["**/node_modules", "**/.output", "**/*.test.ts"]
+}

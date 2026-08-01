@@ -1,0 +1,6 @@
+[data-refined-gitlab='better-change-counts'] {
+  margin-inline-start: 0.75rem;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px solid
+    color-mix(in srgb, currentColor 22%, transparent);
+}
