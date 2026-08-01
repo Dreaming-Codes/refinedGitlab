@@ -10,5 +10,11 @@ export default defineConfig({
     action: {
       default_title: 'Refined GitLab',
     },
+    browser_specific_settings: {
+      gecko: {
+        id: 'refined-gitlab@dreamingcodes',
+        strict_min_version: '109.0',
+      },
+    },
   },
 });
