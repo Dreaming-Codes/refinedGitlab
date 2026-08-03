@@ -22,7 +22,7 @@ export function renderCodeStats(anchor: Element, summary: Summary): HTMLElement 
       <div class="diff-stats-group">
         <span class="gl-font-bold gl-text-subtle">${summary.codeFiles} ${fileWord}</span>
       </div>
-      <div class="gl-flex" aria-label="Excluding lock and generated files: +${summary.codeAdded} ${minus}${summary.codeRemoved}">
+      <div class="gl-flex" aria-label="Excluding generated files: +${summary.codeAdded} ${minus}${summary.codeRemoved}">
         <div class="diff-stats-group gl-flex gl-items-center gl-text-success gl-font-bold">
           <span>+</span> <span>${summary.codeAdded}</span>
         </div>
@@ -44,14 +44,14 @@ export function renderCodeStats(anchor: Element, summary: Summary): HTMLElement 
   const excludedDelta = `+${summary.totalAdded - summary.codeAdded} ${minus}${summary.totalRemoved - summary.codeRemoved}`;
   root.title =
     summary.excluded.length === 0
-      ? 'No lock or generated files excluded'
-      : `Excluded ${summary.excluded.length} lock/generated file(s) (${excludedDelta})` +
+      ? 'No generated files excluded'
+      : `Excluded ${summary.excluded.length} generated file(s) (${excludedDelta})` +
         (basenames.length ? `: ${basenames.join(', ')}${more}` : '') +
         (summary.partial ? '. GitLab omitted some files from the list.' : '');
 
   root.setAttribute(
     'aria-label',
-    `${summary.codeFiles} files excluding lock and generated, +${summary.codeAdded} ${minus}${summary.codeRemoved}` +
+    `${summary.codeFiles} files excluding generated, +${summary.codeAdded} ${minus}${summary.codeRemoved}` +
       (summary.excluded.length
         ? `, ${summary.excluded.length} files excluded`
         : ''),

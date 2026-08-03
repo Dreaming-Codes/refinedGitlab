@@ -6,7 +6,7 @@ Runs on gitlab.com and self-hosted instances. The content script matches all pag
 
 ## Features
 
-- **Better change line counts**: next to the native MR stats, shows file and line totals that exclude lockfiles and common generated files.
+- **Better change line counts**: next to the native MR stats, shows file and line totals that exclude files GitLab marks as generated (`generated_file` / `.gitattributes` `gitlab-generated`).
 
 ## Develop
 

@@ -17,17 +17,29 @@ function asString(v: unknown): string {
   return typeof v === 'string' ? v : '';
 }
 
+function asGenerated(o: Record<string, unknown>): boolean | undefined {
+  if (o.generated_file === true || o.generatedFile === true || o.generated === true) {
+    return true;
+  }
+  if (o.generated_file === false || o.generatedFile === false || o.generated === false) {
+    return false;
+  }
+  return undefined;
+}
+
 function normalizeFile(raw: unknown): FileDiffStat | null {
   if (!raw || typeof raw !== 'object') return null;
   const o = raw as Record<string, unknown>;
   const path = asString(o.new_path) || asString(o.newPath) || asString(o.path);
   if (!path) return null;
   const oldPath = asString(o.old_path) || asString(o.oldPath) || undefined;
+  const generated = asGenerated(o);
   return {
     path,
     oldPath: oldPath || undefined,
     added: asNumber(o.added_lines ?? o.addedLines ?? o.added),
     removed: asNumber(o.removed_lines ?? o.removedLines ?? o.removed),
+    ...(generated !== undefined ? { generated } : {}),
   };
 }
 

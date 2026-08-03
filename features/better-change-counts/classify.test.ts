@@ -1,54 +1,37 @@
 import { describe, expect, test } from 'bun:test';
-import { DEFAULT_OPTIONS } from '@/utils/options';
 import { summarize } from './classify';
 
 describe('summarize', () => {
-  test('excludes lockfiles from code totals', () => {
-    const summary = summarize(
-      [
-        { path: 'src/main.ts', added: 10, removed: 2 },
-        { path: 'package-lock.json', added: 3000, removed: 0 },
-        { path: 'yarn.lock', added: 500, removed: 1 },
-      ],
-      DEFAULT_OPTIONS,
-    );
-
-    expect(summary.codeFiles).toBe(1);
-    expect(summary.codeAdded).toBe(10);
-    expect(summary.codeRemoved).toBe(2);
-    expect(summary.excluded.map((f) => f.path)).toEqual([
-      'package-lock.json',
-      'yarn.lock',
-    ]);
-    expect(summary.totalAdded).toBe(3510);
-  });
-
-  test('nested lock path', () => {
-    const summary = summarize(
-      [{ path: 'apps/web/pnpm-lock.yaml', added: 9, removed: 0 }],
-      DEFAULT_OPTIONS,
-    );
-    expect(summary.excluded).toHaveLength(1);
-    expect(summary.codeFiles).toBe(0);
-  });
-
-  test('tier B vendor off by default', () => {
-    const summary = summarize(
-      [{ path: 'vendor/lib/foo.go', added: 4, removed: 0 }],
-      DEFAULT_OPTIONS,
-    );
-    expect(summary.codeFiles).toBe(1);
-    expect(summary.excluded).toHaveLength(0);
-  });
-
-  test('tier B vendor when opted in', () => {
-    const summary = summarize(
-      [{ path: 'vendor/lib/foo.go', added: 4, removed: 0 }],
+  test('excludes only files GitLab marks generated', () => {
+    const summary = summarize([
+      { path: 'src/main.ts', added: 10, removed: 2 },
       {
-        ...DEFAULT_OPTIONS,
-        enabledOptionalIgnorePatternIds: ['vendor-dir'],
+        path: 'MODULE.bazel.lock',
+        added: 19,
+        removed: 667,
+        generated: true,
       },
-    );
-    expect(summary.excluded).toHaveLength(1);
+      { path: 'Cargo.lock', added: 3000, removed: 0, generated: true },
+      // path alone is not enough — must be flagged by GitLab
+      { path: 'yarn.lock', added: 500, removed: 1 },
+    ]);
+
+    expect(summary.codeFiles).toBe(2);
+    expect(summary.codeAdded).toBe(510);
+    expect(summary.codeRemoved).toBe(3);
+    expect(summary.excluded.map((f) => f.path)).toEqual([
+      'MODULE.bazel.lock',
+      'Cargo.lock',
+    ]);
+    expect(summary.totalAdded).toBe(3529);
+  });
+
+  test('nothing excluded without generated flag', () => {
+    const summary = summarize([
+      { path: 'package-lock.json', added: 9, removed: 0 },
+      { path: 'vendor/lib/foo.go', added: 4, removed: 0 },
+    ]);
+    expect(summary.codeFiles).toBe(2);
+    expect(summary.excluded).toHaveLength(0);
   });
 });

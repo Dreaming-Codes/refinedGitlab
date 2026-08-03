@@ -2,7 +2,6 @@ import type { FeatureContext } from '@/utils/feature';
 import { getCurrentRunId } from '@/utils/runner';
 import { waitForElement } from '@/utils/dom';
 import { selectors } from '@/utils/selectors';
-import { getOptions } from '@/utils/options';
 import { loadDiffStats } from './load-stats';
 import { summarize } from './classify';
 import { removeCodeStats, renderCodeStats } from './render';
@@ -40,10 +39,7 @@ export async function initBetterChangeCounts(
     return cleanup;
   }
 
-  const options = await getOptions();
-  if (ctx.signal.aborted || ctx.runId !== getCurrentRunId()) return cleanup;
-
-  const summary = summarize(files, options, partial);
+  const summary = summarize(files, partial);
   if (summary.excluded.length === 0) return cleanup;
 
   renderCodeStats(anchor, summary);
