@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import {
   encodeProjectPath,
   mrDiffsMetadataUrl,
+  mrRestDiffsUrl,
   parseGitLabRoute,
 } from './gitlab-url';
 
@@ -60,5 +61,21 @@ describe('mrDiffsMetadataUrl', () => {
 describe('encodeProjectPath', () => {
   test('encodes slashes as %2F', () => {
     expect(encodeProjectPath('a/b/c')).toBe('a%2Fb%2Fc');
+  });
+});
+
+describe('mrRestDiffsUrl', () => {
+  test('builds paginated REST diffs URL', () => {
+    const href = mrRestDiffsUrl(
+      {
+        origin: 'https://git.example',
+        fullPath: 'group/proj',
+        mrIid: 3,
+      },
+      2,
+    );
+    expect(href).toBe(
+      'https://git.example/api/v4/projects/group%2Fproj/merge_requests/3/diffs?per_page=100&page=2',
+    );
   });
 });

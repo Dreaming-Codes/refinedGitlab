@@ -2,13 +2,93 @@ import type { Summary } from './classify';
 
 const ATTR = 'data-refined-gitlab';
 const ID = 'better-change-counts';
+const NATIVE_ATTR = 'data-rg-native-stats';
 
 export function removeCodeStats(root: ParentNode = document): void {
   root.querySelectorAll(`[${ATTR}="${ID}"]`).forEach((el) => el.remove());
+  restoreNativeStats(root);
+}
+
+function restoreNativeStats(root: ParentNode): void {
+  root.querySelectorAll(`[${NATIVE_ATTR}]`).forEach((el) => {
+    const original = el.getAttribute(NATIVE_ATTR);
+    if (original !== null) el.textContent = original;
+    el.removeAttribute(NATIVE_ATTR);
+  });
+}
+
+function remember(el: Element): void {
+  if (!el.hasAttribute(NATIVE_ATTR)) {
+    el.setAttribute(NATIVE_ATTR, el.textContent ?? '');
+  }
+}
+
+/**
+ * GitLab's header stats can under-count (e.g. huge generated files). When we
+ * show "excluding generated" next to them, rewrite the native totals from the
+ * same metadata we use so left ≥ right.
+ */
+export function syncNativeStats(anchor: Element, summary: Summary): void {
+  restoreNativeStats(anchor);
+
+  const fileWord = summary.totalFiles === 1 ? 'file' : 'files';
+  const fileRe = /\d[\d,]*\s*files?/i;
+
+  for (const el of anchor.querySelectorAll('*')) {
+    // Only leaf-ish text holders (no element children with text structure).
+    if (el.children.length > 0) continue;
+    const t = el.textContent ?? '';
+    if (!fileRe.test(t)) continue;
+    remember(el);
+    el.textContent = t.replace(fileRe, `${summary.totalFiles} ${fileWord}`);
+    break;
+  }
+
+  let setAdd = false;
+  let setRem = false;
+
+  for (const g of anchor.querySelectorAll('.diff-stats-group')) {
+    const norm = (g.textContent ?? '').replace(/[\u2212\u2013]/g, '-');
+    if (!setAdd && /\+\s*[\d,]+/.test(norm)) {
+      patchStatGroup(g, summary.totalAdded);
+      setAdd = true;
+      continue;
+    }
+    if (!setRem && /(^|[^+\d])-\s*[\d,]+/.test(norm)) {
+      patchStatGroup(g, summary.totalRemoved);
+      setRem = true;
+    }
+  }
+}
+
+function patchStatGroup(group: Element, value: number): void {
+  const spans = [...group.querySelectorAll('span')];
+  // Common GL markup: <span>+</span><span>123</span>
+  if (spans.length >= 2) {
+    const num = spans[spans.length - 1]!;
+    remember(num);
+    num.textContent = String(value);
+    return;
+  }
+
+  const leaves = [...group.querySelectorAll('*')].filter(
+    (el) => el.children.length === 0 && /\d/.test(el.textContent ?? ''),
+  );
+  if (leaves.length > 0) {
+    const num = leaves[leaves.length - 1]!;
+    remember(num);
+    num.textContent = String(value);
+    return;
+  }
+
+  remember(group);
+  const sign = (group.textContent ?? '').trim().startsWith('+') ? '+' : '−';
+  group.textContent = `${sign}${value}`;
 }
 
 export function renderCodeStats(anchor: Element, summary: Summary): HTMLElement {
   removeCodeStats(anchor.ownerDocument ?? document);
+  syncNativeStats(anchor, summary);
 
   const fileWord = summary.codeFiles === 1 ? 'file' : 'files';
   const minus = '−';

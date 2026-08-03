@@ -45,3 +45,14 @@ export function mrDiffsMetadataUrl(route: GitLabRoute): string {
   const path = route.fullPath.split('/').map(encodeURIComponent).join('/');
   return `${route.origin}/${path}/-/merge_requests/${route.mrIid}/diffs_metadata.json`;
 }
+
+/** REST list of MR file diffs. Includes `generated_file`; diffs_metadata.json does not. */
+export function mrRestDiffsUrl(route: GitLabRoute, page = 1): string {
+  if (route.mrIid == null) throw new Error('not an MR route');
+  const id = encodeProjectPath(route.fullPath);
+  const q = new URLSearchParams({
+    per_page: '100',
+    page: String(page),
+  });
+  return `${route.origin}/api/v4/projects/${id}/merge_requests/${route.mrIid}/diffs?${q}`;
+}

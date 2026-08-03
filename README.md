@@ -6,7 +6,7 @@ Runs on gitlab.com and self-hosted instances. The content script matches all pag
 
 ## Features
 
-- **Better change line counts**: next to the native MR stats, shows file and line totals that exclude files GitLab marks as generated (`generated_file` / `.gitattributes` `gitlab-generated`).
+- **Better change line counts**: next to the native MR stats, shows file and line totals excluding files GitLab marks as generated. Line counts come from `diffs_metadata.json`; the generated flag comes from the REST `/diffs` API (`generated_file`), because metadata does not include it.
 
 ## Develop
 
